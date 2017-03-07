@@ -1,0 +1,4 @@
+---
+- name: Initialize OS setting for linux servers
+  hosts: linux_servers
+  become: true
