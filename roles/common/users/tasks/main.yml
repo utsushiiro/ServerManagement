@@ -1,6 +1,6 @@
 ---
-- include_vars: users.yml.secret
-- include_vars: secret_keys.yml.secret
+- include_vars: users.secret.yml
+- include_vars: secret_keys.secret.yml
 
 - name: Install sudo (Debian-like)
   apt:
@@ -22,30 +22,33 @@
     mode: 0750
     state: directory
 
-- name: Create new users
-  user:
-    name: "{{ item.key }}"
-    password: "{{ item.value.password }}"
-    shell: "{{ item.value.shell }}"
-    home: "/home/{{ item.key }}"
-    state: present
-    groups: "{{ item.value.groups | join(',') }}"
-  with_dict: "{{ users_info }}"
+- block:
+  - name: Create new users
+    user:
+      name: "{{ item.key }}"
+      password: "{{ item.value.password }}"
+      shell: "{{ item.value.shell }}"
+      home: "/home/{{ item.key }}"
+      state: present
+      groups: "{{ item.value.groups | default(omit) }}"
+    with_dict: "{{ users_info }}"
 
-- name: Deploy public keys
-  authorized_key:
-    user: "{{ item.key }}"
-    key: "{{ item.value.public_key }}"
-  with_dict: "{{ users_info }}"
+  - name: Deploy public keys
+    authorized_key:
+      user: "{{ item.key }}"
+      key: "{{ item.value.public_key }}"
+    with_dict: "{{ users_info }}"
 
-# Add a user's sudoers file into sudoers.d instead of editing /etc/sudoers directly.
-# Sudoers files whose name contain "." are ignored, so replace "." with "_".
-- name: Deploy sudoers files
-  template:
-    src: "{{ item.value.privilege }}_sudoers.j2"
-    dest: "/etc/sudoers.d/{{ item.key | regex_replace('\\.', '_') }}"
-    owner: root
-    group: root
-    mode: 0400
-    validate: "visudo -cf %s"
-  with_dict: "{{ users_info }}"
+  # Add a user's sudoers file into sudoers.d instead of editing /etc/sudoers directly.
+  # Sudoers files whose name contain "." are ignored, so replace "." with "_".
+  - name: Deploy sudoers files
+    template:
+      src: "{{ item.value.privilege }}_sudoers.j2"
+      dest: "/etc/sudoers.d/{{ item.key | regex_replace('\\.', '_') }}"
+      owner: root
+      group: root
+      mode: 0400
+      validate: "visudo -cf %s"
+    with_dict: "{{ users_info }}"
+
+  when: users_info is defined

@@ -30,4 +30,3 @@ Temporary Items
 ### Ansible
 *.retry
 *.secret
-*.secret.*
