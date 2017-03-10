@@ -2,3 +2,6 @@
 - name: Initialize OS setting for linux servers
   hosts: linux_servers
   become: true
+
+  roles:
+    - name: ../roles/common/packages

@@ -1,0 +1,7 @@
+---
+required_packages:
+  - build-essential
+  - git
+  - vim
+  - tmux
+  - htop
