@@ -1,0 +1,26 @@
+---
+# Users information
+#
+# If add more than one group, separate each other by a comma.
+# ex.)
+#     groups:
+#       - hoge, fuga
+#
+# "privilege" is used to select template file.
+# If the privilege is "admin", "admin_sudoers.j2" is used in main.yml.
+users_info:
+  # USER_NAME_1:
+  #   groups:
+  #     - admin
+  #   password: "{{ users_key['USER_NAME_1'].password }}"
+  #   public_key: "{{ users_key['USER_NAME_1'].public_key }}"
+  #   privilege: admin
+  #   shell: /bin/bash
+
+  # USER_NAME_2:
+  #   groups:
+  #     - admin
+  #   password: "{{ users_key['USER_NAME_2'].password }}"
+  #   public_key: "{{ users_key['USER_NAME_2'].public_key }}"
+  #   privilege: admin
+  #   shell: /bin/bash
