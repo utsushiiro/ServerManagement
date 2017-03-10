@@ -5,3 +5,4 @@
 
   roles:
     - name: ../roles/common/packages
+    - name: ../roles/common/users
