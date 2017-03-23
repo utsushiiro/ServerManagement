@@ -1,0 +1,68 @@
+---
+# http//docs.ansible.com/ansible/ufw_module.html
+
+# Default policy
+- name: Configure ufw defaults
+  ufw: direction={{ item.direction }} policy={{ item.policy }}
+  with_items:
+      - { direction: 'incoming', policy: 'deny' }
+      - { direction: 'outgoing', policy: 'allow' }
+  notify:
+    - Restart ufw
+
+# A DHCP client uses the 68 port to send a message to a DHCP server with udp
+# and a DHCP server uses the 67 port to send a message to a DHCP client with udp.
+# So, a rule to allow to receive packets from the 68 port is added.
+- name: Configure ufw rules for DHCP
+  ufw:
+    rule: allow
+    direction: in
+    proto: udp
+    from_ip: any
+    from_port: 68
+    to_port: 67
+  notify:
+  - Restart ufw
+
+# For isc-dhcp-server failover
+- name: Configure ufw rules for DHCP Failover (primary)
+  ufw:
+    rule: allow
+    direction: in
+    proto: tcp
+    from_ip: any
+    from_port: 520
+    to_port: 519
+  when: dhcp_primary == true
+  notify:
+  - Restart ufw
+
+- name: Configure ufw rules for DHCP Failover (secondary)
+  ufw:
+    rule: allow
+    direction: in
+    proto: tcp
+    from_ip: any
+    from_port: 519
+    to_port: 520
+  when: dhcp_primary == false
+  notify:
+  - Restart ufw
+
+# DNS(port=53/udp&tcp) & SSH(port=22/tcp)
+- name: Configure ufw rules for DNS and SSH with the profiles located in /etc/ufw/applications.d
+  ufw: rule={{ item.rule }} name={{ item.name }}
+  with_items:
+    - { rule: 'allow', name: 'Bind9'}
+    - { rule: 'allow', name: 'OpenSSH'}
+  notify:
+    - Restart ufw
+
+- name: Enable ufw logging
+  ufw: logging=on
+  notify:
+    - Restart ufw
+
+- name: Enable ufw
+  ufw:
+    state: enabled

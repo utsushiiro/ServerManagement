@@ -1,0 +1,4 @@
+---
+- name: Restart ufw
+  ufw:
+    state: reloaded
