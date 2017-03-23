@@ -1,0 +1,24 @@
+zone "." {
+	type hint;
+	file "/etc/bind/zone.root";
+};
+
+zone "localhost" {
+	type master;
+	file "/etc/bind/zone.local";
+};
+
+zone "127.in-addr.arpa" {
+	type master;
+	file "/etc/bind/zone.127";
+};
+
+zone "0.in-addr.arpa" {
+	type master;
+	file "/etc/bind/zone.0";
+};
+
+zone "255.in-addr.arpa" {
+	type master;
+	file "/etc/bind/zone.255";
+};

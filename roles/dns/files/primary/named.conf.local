@@ -1,0 +1,19 @@
+view "internal" {
+    match-clients {
+        127.0.0.1;
+    };
+
+    # default zones
+    include "/etc/bind/named.conf.rfc1918-zones";
+    include "/etc/bind/named.conf.default-zones";
+};
+
+view "external" {
+    match-clients {
+        any;
+    };
+
+    # default zones
+    include "/etc/bind/named.conf.rfc1918-zones";
+    include "/etc/bind/named.conf.default-zones";
+};

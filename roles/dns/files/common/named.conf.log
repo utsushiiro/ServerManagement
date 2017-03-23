@@ -1,0 +1,10 @@
+logging {
+    channel "default-log" {
+        file "/var/log/named/default.log" versions 20 size 1M;
+        severity warning;
+        print-time yes;
+        print-severity yes;
+        print-category yes;
+    };
+    category default { "default-log"; };
+};

@@ -1,0 +1,73 @@
+---
+- name: Update apt & Install
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+    - bind9
+
+- name: Deploy common confs & zone files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/bind
+    mode: 0644
+  with_items:
+    - common/named.conf
+    - common/named.conf.options
+    - common/named.conf.log
+    - common/named.conf.default-zones
+    - common/named.conf.rfc1918-zones
+    - zones/zone.0
+    - zones/zone.127
+    - zones/zone.255
+    - zones/zone.empty
+    - zones/zone.local
+    - zones/zone.root
+
+- name: Deploy primary confs & zone files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/bind
+    mode: 0644
+  with_items:
+    - primary/named.conf.local
+    - primary/named.conf.rndc
+    - primary/rndc.conf
+    - primary/rndc.key
+  when: dns_primary == true
+
+- name: Deploy secondary confs
+  copy:
+    src: "{{ item }}"
+    dest: /etc/bind
+    mode: 0644
+  with_items:
+    - secondary/named.conf.local
+    - secondary/named.conf.rndc
+    - secondary/rndc.conf
+    - secondary/rndc.key
+  when: dns_primary == false
+
+- name: Create a log directory
+  file:
+    name: "/var/log/named"
+    owner: bind
+    group: bind
+    mode: 0750
+    state: directory
+
+- name: Create a cache directory
+  file:
+    name: "/var/cache/bind"
+    owner: root
+    group: bind
+    mode: 0775
+    state: directory
+
+- name: Restart DNS
+  systemd:
+    name: bind9
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
