@@ -1,0 +1,57 @@
+#
+# configuration file for ISC dhcpd
+#
+# Attention: If /etc/ltsp/dhcpd.conf exists, that will be used as
+# configuration file instead of this file.
+#
+
+# The ddns-updates-style parameter controls whethernet or not the server will
+# attempt to do a DNS update when a lease is confirmed. We default to the
+# behavior of the version 2 packages ('none', since DHCP v2 didn't
+# have support for DDNS.)
+ddns-update-style none;
+
+# option definitions common to all supported networks...
+option domain-name          "xxx.xxx";
+option domain-name-servers  "x.x.x.x";
+default-lease-time          600;
+max-lease-time              7200;
+
+# If this DHCP server is the official DHCP server for the local
+# network, the authoritative directive should be uncommented.
+authoritative;
+
+# Use this to send dhcp log messages to a different log file (you also
+# have to hack syslog.conf to complete the redirection).
+log-facility local7;
+
+# Failover setting for secondary
+failover peer "failover_peer" {
+    secondary;
+    address secondary.address.x.x;
+    port 520;
+    peer address primary.address.x.x;
+    peer port 519;
+    max-response-delay 60;
+    max-unacked-updates 10;
+    load balance max seconds 3;
+}
+
+# Host list
+include  "/etc/dhcp/host_list.txt" ;
+
+shared-network localnet {
+  subnet x.x.x.x netmask x.x.x.x {
+    pool {
+        option domain-name         "xxx.xxx";
+        option domain-name-servers "x.x.x.x";
+        option routers             "x.x.x.x";
+        option subnet-mask         "x.x.x.x";
+        range                      x.x.x.x y.y.y.y;
+        # deny                       unknown-clients;
+        failover peer              "failover_peer";
+    }
+  }
+}
+
+

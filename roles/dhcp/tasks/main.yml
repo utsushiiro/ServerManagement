@@ -1,0 +1,35 @@
+---
+- name: Update apt & Install
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+    - isc-dhcp-server
+
+- name: Deploy the primary conf file
+  copy:
+    src: dhcpd.conf.primary
+    dest: /etc/dhcp/dhcpd.conf
+    mode: 0644
+  when: dhcp_primary == true
+
+- name: Deploy the secondary conf file
+  copy:
+    src: dhcpd.conf.secondary
+    dest: /etc/dhcp/dhcpd.conf
+    mode: 0644
+  when: dhcp_primary == false
+
+- name: Deploy host_list.txt
+  copy:
+    src: host_list.txt
+    dest: /etc/dhcp/host_list.txt
+    mode: 0644
+
+- name: Restart DHCP
+  systemd:
+    name: isc-dhcp-server
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
