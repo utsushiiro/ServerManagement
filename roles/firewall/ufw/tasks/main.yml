@@ -31,7 +31,6 @@
     direction: in
     proto: tcp
     from_ip: any
-    from_port: 520
     to_port: 519
   when: dhcp_primary == true
   notify:
@@ -43,7 +42,6 @@
     direction: in
     proto: tcp
     from_ip: any
-    from_port: 519
     to_port: 520
   when: dhcp_primary == false
   notify:
