@@ -1,0 +1,31 @@
+---
+- name: Remove MariaDB to avoid a conflict with MySQL
+  yum:
+    name: mariadb-libs
+    state: absent
+
+- name: Import MySQL Community Repository
+  yum:
+    name: http://dev.mysql.com/get/mysql57-community-release-el7-9.noarch.rpm
+    state: present
+    update_cache: yes
+
+- name: Install & update mysql
+  yum:
+    name: "{{ item }}"
+    state: latest
+    disablerepo: "*"
+    enablerepo: mysql56-community
+  with_items:
+    - mysql-community-server
+    - mysql-community-client
+    - mysql-community-common
+    - mysql-community-devel
+    - mysql-community-libs
+
+- name: Restart MySQL
+  systemd:
+    name: mysqld
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
