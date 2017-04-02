@@ -5,3 +5,4 @@ required_packages:
   - vim
   - tmux
   - htop
+  - tree
