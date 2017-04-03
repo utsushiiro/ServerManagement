@@ -19,11 +19,26 @@
     - php-mbstring
     - php-mcrypt
     - php-mysqlnd
+    - php-pdo
     - php-opcache
     - php-xml
     - php-fpm
 
+- name: Set date.timezone
+  ini_file:
+    dest: /etc/php.ini
+    section: Date
+    option: date.timezone
+    value: Asia/Tokyo
+
+- name: Set error_log
+  ini_file:
+    dest: /etc/php.ini
+    section: PHP
+    option: error_log
+    value: /var/log/php_errors.log
+
 - name: Deploy a sample page for PHP
   shell: "echo '<?php phpinfo() ?>' > /var/www/html/info.php"
   args:
-    creates: "/var/www/html/info.php"
+    creates: /var/www/html/info.php
