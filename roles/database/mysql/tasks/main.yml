@@ -23,6 +23,20 @@
     - mysql-community-devel
     - mysql-community-libs
 
+- name: Set character-set-server
+  ini_file:
+    dest: /etc/my.cnf
+    section: mysqld
+    option: character-set-server
+    value: utf8
+
+- name: Set default-character-set
+  ini_file:
+    dest: /etc/my.cnf
+    section: client
+    option: default-character-set
+    value: utf8
+
 - name: Restart MySQL
   systemd:
     name: mysqld
