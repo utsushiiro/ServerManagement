@@ -38,6 +38,13 @@
     option: error_log
     value: /var/log/php_errors.log
 
+- name: Set mbstring.language
+  ini_file:
+    dest: /etc/php.ini
+    section: mbstring
+    option: mbstring.language
+    value: Japanese
+
 - name: Deploy a sample page for PHP
   shell: "echo '<?php phpinfo() ?>' > /var/www/html/info.php"
   args:
