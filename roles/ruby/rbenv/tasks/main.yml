@@ -1,0 +1,32 @@
+---
+- name: Install rbenv
+  git:
+    repo: https://github.com/sstephenson/rbenv.git
+    dest: "{{ rbenv_root }}"
+
+- name: Install ruby-build
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: "{{ rbenv_root }}/plugins/ruby-build"
+
+- name: Deploy rbenv init script
+  copy:
+    src: rbenv.sh
+    dest: /etc/profile.d
+    mode: 0775
+
+- name: Install dependencies to make Ruby
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - zlib-devel
+    - openssl-devel
+    - readline-devel
+
+- name: "Install Ruby{{ ruby_version }} with rbenv"
+  shell: rbenv install {{ ruby_version }}
+
+- name: "Set the global Ruby version to {{ ruby_version }}"
+  shell: rbenv global {{ ruby_version }} && rbenv rehash
