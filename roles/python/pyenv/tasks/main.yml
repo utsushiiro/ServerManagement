@@ -1,0 +1,31 @@
+---
+- name: Install pyenv
+  git:
+    repo: https://github.com/pyenv/pyenv.git
+    dest: "{{ pyenv_root }}"
+
+- name: Deploy pyenv init script
+  copy:
+    src: pyenv.sh
+    dest: /etc/profile.d
+    mode: 0775
+
+- name: Install dependencies to make Python
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - zlib-devel
+    - openssl-devel
+    - readline-devel
+    - bzip2
+    - bzip2-devel
+    - sqlite
+    - sqlite-devel
+
+- name: "Install Python{{ python_version }} with pyenv"
+  shell: pyenv install {{ python_version }}
+
+- name: "Set the global Python version to {{ python_version }}"
+  shell: pyenv global {{ python_version }} && pyenv rehash
