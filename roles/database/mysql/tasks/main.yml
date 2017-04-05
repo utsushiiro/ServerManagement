@@ -14,7 +14,7 @@
   yum:
     name: "{{ item }}"
     state: latest
-    disablerepo: "*"
+    disablerepo: "mysql*"
     enablerepo: mysql56-community
   with_items:
     - mysql-community-server
@@ -22,7 +22,11 @@
     - mysql-community-common
     - mysql-community-devel
     - mysql-community-libs
-    - MySQL-python
+
+- name: Install $ update MySQL-python
+  yum:
+    name: MySQL-python
+    state: latest
 
 - name: Set character-set-server
   ini_file:
