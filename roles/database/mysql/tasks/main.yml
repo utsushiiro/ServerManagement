@@ -10,7 +10,7 @@
     state: present
     update_cache: yes
 
-- name: Install & update mysql
+- name: Install & update MySQL
   yum:
     name: "{{ item }}"
     state: latest
@@ -22,6 +22,7 @@
     - mysql-community-common
     - mysql-community-devel
     - mysql-community-libs
+    - MySQL-python
 
 - name: Set character-set-server
   ini_file:
