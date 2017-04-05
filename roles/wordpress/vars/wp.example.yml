@@ -1,0 +1,20 @@
+# Install
+httpd_user: apache
+wp_install_path: /var/www/html/wp
+
+# Database
+mysql_root_pass: root
+wp_db_name: test
+wp_db_user: test
+wp_db_user_pass: test
+wp_db_host: localhost
+wp_db_prefix: wp_
+
+# Site Infomation
+wp_url: http:/localhost/
+wp_site_title: "Test Site"
+wp_admin_user: test
+wp_admin_pass: test
+wp_admin_email: test@localhost
+wp_wordpress_address: http://localhost/wp
+wp_site_address: http://localhost/wp

@@ -1,0 +1,80 @@
+---
+- name: Load the variables for Wordpress settings
+  include_vars: "{{ wp_vars_file }}"
+
+- name: Install wp-cli
+  get_url:
+    url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    dest: /usr/local/bin/wp
+
+- name: Change the mode of wp-cli
+  file:
+    path: /usr/local/bin/wp
+    mode: 0755
+
+- name: Create Wordpress database
+  mysql_db:
+    login_password: "{{ mysql_root_pass }}"
+    name: "{{ wp_db_name }}"
+    state: present
+
+- name: Create Wordpress database user
+  mysql_user:
+    login_password: "{{ mysql_root_pass }}"
+    name: "{{ wp_db_user }}"
+    password: "{{ wp_db_user_pass }}"
+    host: "localhost"
+    priv: "{{ wp_db_name }}.*:ALL"
+    state: present
+
+- name: Download Wordpress
+  command: >-
+    /usr/local/bin/wp core download
+    --locale=ja
+    --path={{ wp_install_path }}
+
+- name: Change ownership in Wordpress
+  file:
+    path: "{{ wp_install_path }}"
+    owner: "{{ httpd_user }}"
+    group: "{{ httpd_user }}"
+    recurse: yes
+
+- name: Configure Wordpress settings
+  shell: >-
+    /usr/local/bin/wp core config
+    --dbname={{ wp_db_name }}
+    --dbuser={{ wp_db_user }}
+    --dbpass={{ wp_db_user_pass }}
+    --dbhost={{ wp_db_host }}
+    --dbprefix={{ wp_db_prefix }}
+  args:
+    chdir: "{{ wp_install_path }}"
+
+- name: Install WordPress Core
+  shell: >-
+    /usr/local/bin/wp core install
+    --url={{ wp_url }}
+    --title={{ wp_site_title }}
+    --admin_user={{ wp_admin_user }}
+    --admin_password={{ wp_admin_pass }}
+    --admin_email={{ wp_admin_email }}
+  args:
+    chdir: "{{ wp_install_path }}"
+
+- name: Set Language
+  shell: /usr/local/bin/wp core language install ja --activate
+  args:
+    chdir: "{{ wp_install_path }}"
+
+- name: Set the WordPress Address
+  shell: /usr/local/bin/wp option update siteurl '{{ wp_wordpress_address }}'
+  args:
+    chdir: "{{ wp_install_path }}"
+
+- name: Set the Site Address
+  shell: /usr/local/bin/wp option update home '{{ wp_site_address }}'
+  args:
+    chdir: "{{ wp_install_path }}"
+
+
