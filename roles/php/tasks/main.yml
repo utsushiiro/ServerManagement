@@ -45,6 +45,13 @@
     option: mbstring.language
     value: Japanese
 
+- name: Restart httpd
+  systemd:
+    name: httpd
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
 - name: Deploy a sample page for PHP
   shell: "echo '<?php phpinfo() ?>' > /var/www/html/info.php"
   args:
