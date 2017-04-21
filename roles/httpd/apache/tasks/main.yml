@@ -12,6 +12,15 @@
     immediate: yes
     state: enabled
 
+- name: Delete Indexes from Options of /var/www/html
+  lineinfile:
+    dest: /etc/httpd/conf/httpd.conf
+    regexp: "(\\s*)Options(.*)Indexes(.*)"
+    line: "\\1Options \\2 \\3"
+    state: present
+    backup: yes
+    backrefs: yes
+
 - name: Restart httpd
   systemd:
     name: httpd
