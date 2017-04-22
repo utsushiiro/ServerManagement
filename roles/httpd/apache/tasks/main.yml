@@ -21,6 +21,12 @@
     backup: yes
     backrefs: yes
 
+- name: Deploy the security.conf
+  copy:
+    src: security.conf
+    dest: /etc/httpd/conf.d
+    mode: 0644
+
 - name: Restart httpd
   systemd:
     name: httpd
