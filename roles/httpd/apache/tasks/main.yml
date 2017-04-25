@@ -21,6 +21,15 @@
     backup: yes
     backrefs: yes
 
+- name: Comment out AddDefaultCharset
+  lineinfile:
+    dest: /etc/httpd/conf/httpd.conf
+    regexp: "(\\s*)AddDefaultCharset(.*)"
+    line: "\\1#AddDefaultCharset\\2"
+    state: present
+    backup: yes
+    backrefs: yes
+
 - name: Deploy the security.conf
   copy:
     src: security.conf
