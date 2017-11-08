@@ -1,0 +1,12 @@
+---
+- name: Install Apache, MySQL, PHP
+  hosts: linux_servers
+  become: true
+
+  roles:
+    - name: ../roles/httpd/apache
+      tags: apache
+    - name: ../roles/php
+      tags: php
+    - name: ../roles/database/mysql
+      tags: mysql
