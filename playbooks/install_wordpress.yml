@@ -3,7 +3,7 @@
   hosts: wp_server
   become: true
   vars:
-    wp_vars_file: wp.utsushiiro.encrypted.yml
+    wp_vars_file: wp.encrypted.yml
 
   roles:
     - name: ../roles/wordpress
