@@ -1,0 +1,8 @@
+---
+- name: Install Java
+  hosts: linux_servers
+  become: true
+
+  roles:
+    - name: ../roles/java
+      tags: packages
