@@ -1,6 +1,6 @@
 ---
-- include_vars: users.secret.yml
-- include_vars: secret_keys.secret.yml
+- include_vars: users.encrypted.yml
+- include_vars: secret_keys.encrypted.yml
 
 - name: Install sudo (Debian-like)
   apt:
