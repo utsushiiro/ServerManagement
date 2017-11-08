@@ -1,0 +1,32 @@
+---
+- name: Import PostgreSQL Repository
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-2.noarch.rpm
+    state: present
+    update_cache: yes
+
+- name: Install PostgreSQL server
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql95
+    - postgresql95-server
+
+- name: Check if a database cluster exists
+  stat:
+    path: /var/lib/pgsql/9.5/data/PG_VERSION
+  register: database_cluster
+
+- name: Initialize Database
+  shell: /usr/pgsql-9.5/bin/initdb -D /var/lib/pgsql/9.5/data --no-locale
+  become: yes
+  become_user: postgres
+  when: not database_cluster.stat.exists
+
+- name: Restart PostgreSQL
+  systemd:
+    name: postgresql-9.5
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
