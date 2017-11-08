@@ -8,3 +8,9 @@
       tags: packages
     - name: ../roles/common/users
       tags: users
+    - name: ../roles/php
+      tags: php
+    - name: ../roles/httpd/apache
+      tags: apache
+    - name: ../roles/database/mysql
+      tags: mysql
