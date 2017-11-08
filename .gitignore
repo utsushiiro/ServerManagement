@@ -30,3 +30,7 @@ Temporary Items
 ### Ansible
 *.retry
 *.secret
+
+### Intellij
+.idea
+ServerSetup.iml
