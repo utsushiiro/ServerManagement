@@ -17,7 +17,7 @@ if [[ $# != 1 ]]; then
   exit 2
 fi
 
-ansible-galaxy -p roles init $1 || exit 3
+ansible-galaxy init ./roles/$1 || exit 3
 rm roles/$1/.travis.yml
 for d in templates files; do
   touch roles/$1/$d/.gitkeep
