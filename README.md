@@ -15,6 +15,12 @@ ansible-playbook playbooks/プレイブック名 -i inventory/インベントリ
 ansible-playbook playbooks/プレイブック名 -i inventory/インベントリ名 -u ユーザ名 --private-key=使用ユーザの秘密鍵へのパス --ask-become-pass --ask-vault-pass
 ```
 
+#### Ansible-Vaultで暗号化したファイルを利用する場合
+以下のオプションを付与する
+```
+--ask-vault-pass
+```
+
 #### tagsの利用
 
 以下を上記のコマンドのオプションとしてつけることで特定のタスクのみを実行できる.
