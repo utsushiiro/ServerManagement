@@ -34,4 +34,4 @@ Temporary Items
 
 ### Intellij
 .idea
-ServerSetup.iml
+*.iml
