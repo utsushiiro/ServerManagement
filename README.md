@@ -1,4 +1,4 @@
-# Ansible playbooks for the server setting
+# Ansible playbooks for the server management
 
 ## USAGE
 
