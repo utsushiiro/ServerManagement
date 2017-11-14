@@ -1,0 +1,127 @@
+---
+- name: Load the variables for database settings
+  include_vars: "{{ db_vars_file }}"
+
+- name: Install Zabbix Repository
+  yum_repository:
+    name: zabbix-34
+    description: Zabbix Official Repository - $basearch
+    baseurl: https://repo.zabbix.com/zabbix/3.4/rhel/7/$basearch/
+    gpgkey: https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX-A14FE591
+    gpgcheck: yes
+
+- name: Install PHP packages for Zabbix
+  yum:
+    name: "{{ item }}"
+    disablerepo: "*"
+    enablerepo: "remi-php70"
+    state: present
+  with_items:
+    - php-gd
+    - php-bcmath
+    - php-mbstring
+    - php-xml
+    - php-ldap
+    - php-mysqlnd
+    - php-pecl-mysql
+
+- name: Install Zabbix Server
+  yum:
+    name: "{{ item }}"
+    enablerepo: zabbix-34
+    state: present
+  with_items:
+    - zabbix-server-mysql
+    - zabbix-web
+    - zabbix-web-mysql
+    - zabbix-web-japanese
+
+- name: Install Zabbix Agent
+  yum:
+    name: zabbix-agent
+    enablerepo: zabbix-34
+    state: present
+
+- name: Deploy the apache conf file for mod_php7
+  copy:
+    src: zabbix-php7.conf
+    dest: /etc/httpd/conf.d/zabbix-php7.conf
+    mode: 0644
+
+- name: Create a zabbix database
+  mysql_db:
+    name: "{{ ZabbixDBName }}"
+    state: present
+    encoding: utf8
+    collation: utf8_bin
+    login_user: "{{ DBLoginUser }}"
+    login_password: "{{ DBLoginPassword }}"
+
+- name: Create a database user for zabbix database
+  mysql_user:
+    name: "{{ ZabbixDBUser }}"
+    password: "{{ ZabbixDBPassword }}"
+    priv: "{{ ZabbixDBName }}.*:ALL"
+    state: present
+    login_user: "{{ DBLoginUser }}"
+    login_password: "{{ DBLoginPassword }}"
+
+- name: Get zabbix-server-mysql version
+  command: rpm -q zabbix-server-mysql --qf "%{Version}"
+  register: cmd_result
+  changed_when: False
+
+- set_fact:
+    zabbix_server_mysql_version: "{{ cmd_result.stdout }}"
+
+- name: Check if the zabbix database is already initialized
+  stat:
+    path: /usr/share/doc/zabbix-server-mysql-{{ zabbix_server_mysql_version }}/create.sql.executed
+  register: create_sql_executed
+
+- name: Import initial schema and data for the server
+  shell: >-
+    zcat /usr/share/doc/zabbix-server-mysql-{{ zabbix_server_mysql_version }}/create.sql.gz
+    | mysql -u{{ ZabbixDBUser }} -p{{ ZabbixDBPassword }} {{ ZabbixDBName }}
+  when: not create_sql_executed.stat.exists
+
+- name: Create a file to indicate that the zabbix database is already initialized
+  file:
+    path: /usr/share/doc/zabbix-server-mysql-{{ zabbix_server_mysql_version }}/create.sql.executed
+    state: touch
+  when: not create_sql_executed.stat.exists
+
+- name: Set the zabbix config file
+  ini_file:
+    dest: /etc/zabbix/zabbix_server.conf
+    section: null
+    option: DBName
+    value: "{{ ZabbixDBName }}"
+
+- name: Set the zabbix config file
+  ini_file:
+    dest: /etc/zabbix/zabbix_server.conf
+    section: null
+    option: DBUser
+    value: "{{ ZabbixDBUser }}"
+
+- name: Set the zabbix config file
+  ini_file:
+    dest: /etc/zabbix/zabbix_server.conf
+    section: null
+    option: DBPassword
+    value: "{{ ZabbixDBPassword }}"
+
+- name: Restart zabbix server
+  systemd:
+    name: zabbix-server
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
+- name: Restart zabbix agent
+  systemd:
+    name: zabbix-agent
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
