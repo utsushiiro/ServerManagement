@@ -1,2 +1,18 @@
 ---
-# vars file for php
+php_repository_url: http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+php_repository_name: remi-php70
+
+php_packages:
+  - php
+  - php-cli
+  - php-common
+  - php-dbg
+  - php-devel
+  - php-gd
+  - php-mbstring
+  - php-mcrypt
+  - php-mysqlnd
+  - php-pdo
+  - php-opcache
+  - php-xml
+  - php-fpm
