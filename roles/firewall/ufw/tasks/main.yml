@@ -49,12 +49,33 @@
   notify:
   - Restart ufw
 
-# DNS(port=53/udp&tcp) & SSH(port=22/tcp)
-- name: Configure ufw rules for DNS and SSH with the profiles located in /etc/ufw/applications.d
-  ufw: rule={{ item.rule }} name={{ item.name }}
-  with_items:
-    - { rule: 'allow', name: 'Bind9'}
-    - { rule: 'allow', name: 'OpenSSH'}
+- name: Configure ufw rules for DNS(tcp)
+  ufw:
+    rule: allow
+    direction: in
+    proto: tcp
+    from_ip: any
+    to_port: 53
+  notify:
+  - Restart ufw
+
+- name: Configure ufw rules for DNS(udp)
+  ufw:
+    rule: allow
+    direction: in
+    proto: udp
+    from_ip: any
+    to_port: 53
+  notify:
+  - Restart ufw
+
+- name: Configure ufw rules for SSH
+  ufw:
+    rule: allow
+    direction: in
+    proto: tcp
+    from_ip: any
+    to_port: 22
   notify:
   - Restart ufw
 
