@@ -2,6 +2,27 @@
 php_repository_url: http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 php_repository_name: remi-php70
 
+php_ini_directives:
+  -
+    section: PHP
+    option: error_log
+    value: /var/log/php_errors.log
+
+  -
+    section: PHP
+    option: short_open_tag
+    value: "On"
+
+  -
+    section: Date
+    option: date.timezone
+    value: Asia/Tokyo
+
+  -
+    section: mbstring
+    option: mbstring.language
+    value: Japanese
+
 php_packages:
   - php
   - php-cli
