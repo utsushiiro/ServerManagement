@@ -3,12 +3,14 @@
 
 # Default policy
 - name: Configure ufw defaults
-  ufw: direction={{ item.direction }} policy={{ item.policy }}
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
   with_items:
       - { direction: 'incoming', policy: 'deny' }
       - { direction: 'outgoing', policy: 'allow' }
   notify:
-    - Restart ufw
+  - Restart ufw
 
 # A DHCP client uses the 68 port to send a message to a DHCP server with udp
 # and a DHCP server uses the 67 port to send a message to a DHCP client with udp.
@@ -32,7 +34,7 @@
     proto: tcp
     from_ip: any
     to_port: 519
-  when: dhcp_primary == true
+  when: dhcp_primary | default(false)
   notify:
   - Restart ufw
 
@@ -43,7 +45,7 @@
     proto: tcp
     from_ip: any
     to_port: 520
-  when: dhcp_primary == false
+  when: dhcp_secondary | default(false)
   notify:
   - Restart ufw
 
@@ -54,12 +56,13 @@
     - { rule: 'allow', name: 'Bind9'}
     - { rule: 'allow', name: 'OpenSSH'}
   notify:
-    - Restart ufw
+  - Restart ufw
 
 - name: Enable ufw logging
-  ufw: logging=on
+  ufw:
+    logging: on
   notify:
-    - Restart ufw
+  - Restart ufw
 
 - name: Enable ufw
   ufw:
