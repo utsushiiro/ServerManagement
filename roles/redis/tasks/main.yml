@@ -1,0 +1,33 @@
+---
+- block:
+  - name: Update yum packages
+    yum:
+      name: "*"
+      state: latest
+      update_cache: yes
+
+  - name: Install Redis
+    yum:
+      name: redis
+      state: present
+
+  when: ansible_os_family == "RedHat"
+
+- block:
+  - name: Update apt packages
+    apt:
+      update_cache: yes
+
+  - name: Install Redis
+    apt:
+      name: redis-server
+      state: present
+
+  - name: Configure ufw rules for Redis
+    ufw:
+      rule: allow
+      direction: in
+      from_ip: any
+      to_port: 6379
+
+  when: ansible_os_family == "Debian"
