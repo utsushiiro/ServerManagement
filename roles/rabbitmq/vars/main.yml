@@ -1,0 +1,8 @@
+---
+# https://www.rabbitmq.com/networking.html - Port Access
+rabbitmq_ports:
+  - 4369
+  - 5671
+  - 5672
+  - 15672
+  - 25672
