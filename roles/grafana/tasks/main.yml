@@ -1,0 +1,56 @@
+---
+- block:
+  - name: Install Grafana repository
+    copy:
+      src: grafana.repo
+      dest: /etc/yum.repos.d
+      mode: 0644
+
+  - name: Update yum packages
+    yum:
+      name: "*"
+      state: latest
+      update_cache: yes
+
+  - name: Install Grafana
+    yum:
+      name: grafana
+      state: present
+
+  when: ansible_os_family == "RedHat"
+
+- block:
+  - name: Install the gpg public key
+    apt_key:
+      url: https://packagecloud.io/gpg.key
+      state: present
+
+  - name: Deploy apt source file
+    copy:
+      src: grafana.list
+      dest: /etc/apt/sources.list.d
+      mode: 0644
+
+  - name: Update apt packages
+    apt:
+      update_cache: yes
+
+  - name: Install Grafana
+    apt:
+      name: grafana
+
+  - name: Configure ufw rules for Grafana
+    ufw:
+      rule: allow
+      direction: in
+      from_ip: any
+      to_port: 3000
+
+  when: ansible_os_family == "Debian"
+
+- name: Restart Grafana
+  systemd:
+    name: grafana-server
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
