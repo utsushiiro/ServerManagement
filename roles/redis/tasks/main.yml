@@ -11,6 +11,13 @@
       name: redis
       state: present
 
+  - name: Configure firewalld for Redis
+    firewalld:
+      port: 6379/tcp
+      state: enabled
+      permanent: true
+      immediate: true
+
   when: ansible_os_family == "RedHat"
 
 - block:
@@ -27,6 +34,7 @@
     ufw:
       rule: allow
       direction: in
+      proto: tcp
       from_ip: any
       to_port: 6379
 
