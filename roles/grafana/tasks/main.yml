@@ -17,6 +17,13 @@
       name: grafana
       state: present
 
+  - name: Configure firewalld for Grafana
+    firewalld:
+      port: 3000/tcp
+      state: enabled
+      permanent: true
+      immediate: true
+
   when: ansible_os_family == "RedHat"
 
 - block:
@@ -43,6 +50,7 @@
     ufw:
       rule: allow
       direction: in
+      proto: tcp
       from_ip: any
       to_port: 3000
 
