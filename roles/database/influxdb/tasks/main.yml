@@ -17,6 +17,16 @@
       name: influxdb
       state: present
 
+  - name: Configure firewalld for InfluxDB
+    firewalld:
+      port: "{{ item }}/tcp"
+      state: enabled
+      permanent: true
+      immediate: true
+    with_items:
+      - 8086
+      - 8088
+
   when: ansible_os_family == "RedHat"
 
 - block:
@@ -43,6 +53,7 @@
     ufw:
       rule: allow
       direction: in
+      proto: tcp
       from_ip: any
       to_port: "{{ item }}"
     with_items:
