@@ -1,0 +1,13 @@
+{
+  "sensu": [
+    {
+      "name": "{{ sensu_server_name }}",
+      "host": "{{ sensu_server_ip }}",
+      "port": 4567
+    }
+  ],
+  "uchiwa": {
+    "host": "0.0.0.0",
+    "port": {{ uchiwa_port }}
+  }
+}

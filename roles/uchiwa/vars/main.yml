@@ -1,0 +1,4 @@
+---
+sensu_server_name: "Sensu Server"
+sensu_server_ip: 127.0.0.1
+uchiwa_port: 3333

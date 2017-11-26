@@ -1,0 +1,66 @@
+---
+- block:
+  - name: Install Sensu repository
+    copy:
+      src: sensu.repo
+      dest: /etc/yum.repos.d
+      mode: 0644
+
+  - name: Update yum packages
+    yum:
+      name: "*"
+      state: latest
+      update_cache: yes
+
+  - name: Install Uchiwa
+    yum:
+      name: uchiwa
+      state: present
+
+  - name: Configure firewalld for Uchiwa
+    firewalld:
+      port: "{{ uchiwa_port }}/tcp"
+      state: enabled
+      permanent: true
+      immediate: true
+
+  when: ansible_os_family == "RedHat"
+
+- block:
+  - name: Install the gpg public key
+    apt_key:
+      url: https://sensu.global.ssl.fastly.net/apt/pubkey.gpg
+      state: present
+
+  - name: Deploy apt source file
+    template:
+      src: sensu.list.j2
+      dest: /etc/apt/sources.list.d/sensu.list
+      mode: 0644
+
+  - name: Install Uchiwa
+    apt:
+      name: uchiwa
+
+  - name: Configure ufw rules for Uchiwa
+    ufw:
+      rule: allow
+      direction: in
+      proto: tcp
+      from_ip: any
+      to_port: "{{ uchiwa_port }}"
+
+  when: ansible_os_family == "Debian"
+
+- name: Deploy Uchiwa configuration file
+  template:
+    src: uchiwa.json.j2
+    dest: /etc/sensu/uchiwa.json
+    mode: 0644
+
+- name: Restart uchiwa
+  systemd:
+    name: uchiwa
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
