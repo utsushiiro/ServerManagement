@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "metrics-memory-percent": {
+      "type": "metric",
+      "command": "metrics-memory-percent.rb --scheme .:::name:::.memory_percent",
+      "interval": 10,
+      "subscribers": [
+        "all"
+      ],
+      "handlers": [
+        "influxdb"
+      ]
+    }
+  }
+}

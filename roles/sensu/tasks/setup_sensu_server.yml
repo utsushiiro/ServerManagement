@@ -1,0 +1,82 @@
+---
+- name: Deploy sensu-server configuration files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/sensu/conf.d
+    mode: 0644
+  with_items:
+    - api.json
+    - redis.json
+
+- name: Install sensu plugins
+  command: sensu-install -P "{{ sensu_server_plugins | join(',') }}"
+
+- name: Deploy check configuration files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/sensu/conf.d
+    mode: 0644
+  with_items:
+    - check_cpu.json
+
+- include_vars: "{{ item }}"
+  with_items:
+    - influxdb.encrypted.local.yml
+    - slack.encrypted.local.yml
+
+- name: Deploy handler configuration files
+  template:
+    src: "{{ item }}"
+    dest: "/etc/sensu/conf.d/{{ item | regex_replace('\\.j2','') }}"
+    mode: 0644
+  with_items:
+    - handler_influxdb.json.j2
+    - handler_slack.json.j2
+
+- name: Deploy metrics configuration files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/sensu/conf.d
+    mode: 0644
+  with_items:
+    - metrics_memory_percent.json
+    - metrics_vmstat.json
+
+- name: Deploy template files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/sensu/conf.d
+    mode: 0644
+  with_items:
+    - template_slack_payload.erb
+
+- name: Configure firewalld for sensu-api
+  firewalld:
+    port: 4567/tcp
+    state: enabled
+    permanent: true
+    immediate: true
+  when: ansible_os_family == "RedHat"
+
+- name: Configure ufw rules for sensu-api
+  ufw:
+    rule: allow
+    direction: in
+    proto: tcp
+    from_ip: any
+    to_port: 4567
+  when: ansible_os_family == "Debian"
+
+- name: Restart sensu-server
+  systemd:
+    name: sensu-server
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
+- name: Restart sensu-api
+  systemd:
+    name: sensu-api
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

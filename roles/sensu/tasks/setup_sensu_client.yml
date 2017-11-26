@@ -1,0 +1,16 @@
+---
+- name: Deploy sensu-client configuration file
+  template:
+    src: client.json.j2
+    dest: /etc/sensu/conf.d/client.json
+    mode: 0644
+
+- name: Install sensu plugins
+  command: sensu-install -P "{{ sensu_client_plugins | join(',') }}"
+
+- name: Restart sensu-client
+  systemd:
+    name: sensu-client
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

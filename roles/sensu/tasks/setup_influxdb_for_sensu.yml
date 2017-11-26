@@ -1,0 +1,10 @@
+---
+- include_vars: influxdb.encrypted.local.yml
+
+- name: Create database for Sensu
+  influxdb_database:
+      hostname: 127.0.0.1
+      database_name: "{{ SENSU_INFLUXDB_DATABASE }}"
+      username: "{{ SENSU_INFLUXDB_USER }}"
+      password: "{{ SENSU_INFLUXDB_PASSWORD }}"
+      state: present

@@ -1,0 +1,16 @@
+{
+  "handlers": {
+    "influxdb": {
+      "type": "pipe",
+      "command": "metrics-influxdb.rb"
+    }
+  },
+  "influxdb": {
+    "hosts" : ["localhost"],
+    "host": "localhost",
+    "port": "8086",
+    "username": "{{ SENSU_INFLUXDB_USER }}",
+    "password": "{{ SENSU_INFLUXDB_PASSWORD }}",
+    "database": "{{ SENSU_INFLUXDB_DATABASE }}"
+  }
+}

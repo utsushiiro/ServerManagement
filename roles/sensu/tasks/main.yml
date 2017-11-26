@@ -1,0 +1,63 @@
+---
+- block:
+  - name: Install Sensu repository
+    copy:
+      src: sensu.repo
+      dest: /etc/yum.repos.d
+      mode: 0644
+
+  - name: Update yum packages
+    yum:
+      name: "*"
+      state: latest
+      update_cache: yes
+
+  - name: Install Sensu
+    yum:
+      name: sensu
+      state: present
+
+  when: ansible_os_family == "RedHat"
+
+- block:
+  - name: Install the gpg public key
+    apt_key:
+      url: https://sensu.global.ssl.fastly.net/apt/pubkey.gpg
+      state: present
+
+  - name: Deploy apt source file
+    template:
+      src: sensu.list.j2
+      dest: /etc/apt/sources.list.d/sensu.list
+      mode: 0644
+
+  - name: Update apt packages
+    apt:
+      update_cache: yes
+
+  - name: Install Sensu
+    apt:
+      name: sensu
+
+  when: ansible_os_family == "Debian"
+
+- name: Deploy transport configuration files
+  copy:
+    src: transport.json
+    dest: /etc/sensu/conf.d
+    mode: 0644
+
+- include_vars: rabbitmq.encrypted.local.yml
+
+- name: Deploy rabbitmq configuration files
+  template:
+    src: rabbitmq.json.j2
+    dest: /etc/sensu/conf.d/rabbitmq.json
+    mode: 0644
+
+- include_tasks: setup_sensu_server.yml
+  when: is_sensu_server | default(false)
+
+- include_tasks: setup_sensu_client.yml
+  when: is_sensu_client | default(false)
+

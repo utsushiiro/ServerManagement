@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "metrics-vmstat": {
+      "type": "metric",
+      "command": "metrics-vmstat.rb --scheme .:::name:::.vmstat",
+      "interval": 10,
+      "subscribers": [
+        "all"
+      ],
+      "handlers": [
+        "influxdb"
+      ]
+    }
+  }
+}

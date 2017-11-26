@@ -1,0 +1,9 @@
+sensu_client_plugins:
+  - "process-checks"
+  - "cpu-checks"
+  - "memory-checks"
+  - "vmstats"
+
+sensu_server_plugins:
+  - "slack"
+  - "influxdb"

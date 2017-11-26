@@ -1,0 +1,24 @@
+---
+- name: Check if a RabbitMQ is already set up for Sensu
+  stat:
+    path: /etc/rabbitmq/already_set_up_for_sensu
+  register: already_set_up_for_sensu
+
+- block:
+  - include_vars: ../vars/rabbitmq.encrypted.local.yml
+
+  - name: Create a RabbitMQ vhost for Sensu
+    command: rabbitmqctl add_vhost "{{ SENSU_RABBITMQ_VHOST }}"
+
+  - name: Create a RabbitMQ user for Sensu
+    command: rabbitmqctl add_user "{{ SENSU_RABBITMQ_USER }}" "{{ SENSU_RABBITMQ_PASSWORD }}"
+
+  - name: Set permission
+    command: rabbitmqctl set_permissions -p "{{ SENSU_RABBITMQ_VHOST }}" "{{ SENSU_RABBITMQ_USER }}" ".*" ".*" ".*"
+
+  - name: Create a file to indicate that  a RabbitMQ is already set up for Sensu
+    file:
+      path: /etc/rabbitmq/already_set_up_for_sensu
+      state: touch
+
+  when: not already_set_up_for_sensu.stat.exists

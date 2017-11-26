@@ -1,0 +1,13 @@
+{
+   "client": {
+     "name": "{{ inventory_hostname }}",
+     "address": "{{ ansible_ssh_host }}",
+     "subscriptions": [
+        "all"
+     ],
+     "cpu": {
+      "warning": 70,
+      "critical": 80
+     }
+   }
+}

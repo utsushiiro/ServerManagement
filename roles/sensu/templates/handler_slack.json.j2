@@ -1,0 +1,12 @@
+{
+  "handlers": {
+    "slack": {
+      "type": "pipe",
+      "command": "handler-slack.rb -j slack"
+    }
+  },
+  "slack": {
+    "webhook_url": "{{ SLACK_WEBHOOK_URL }}",
+    "payload_template": "/etc/sensu/conf.d/template_slack_payload.erb"
+  }
+}
